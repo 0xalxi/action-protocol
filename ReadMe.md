@@ -1,6 +1,6 @@
 ---
 eip: 5050
-title: NFT Interaction Standard
+title: Interactive NFTs with Modular Environments
 description: Action messaging and discovery protocol for interactions on and between NFTs
 author: Alexi (@0xalxi)
 discussions-to: https://ethereum-magicians.org/t/eip-5050-nft-interaction-standard/9922
@@ -8,16 +8,16 @@ status: Draft
 type: Standards Track
 category: ERC
 created: 2021-4-18
-requires: 173, 721, 1155, 1820, 4906
+requires: 165, 173, 721, 1155, 1820, 4906
 ---
 
 ## Abstract
 
-This standard defines a broadly applicable action messaging protocol for the transmission of arbitrary, user-initiated actions between tokens. Modular statefulness is achieved with optional state broker contracts that can provide arbitration and settlement of the action process.
+This standard defines a broadly applicable action messaging protocol for the transmission of user-initiated actions between tokens. Modular statefulness is achieved with optional state controller contracts (i.e. environments) that manage shared state, and provide arbitration and settlement of the action process.
 
 ## Motivation
 
-Tokenized item standards such as [ERC-721](./eip-721.md) and [ERC-1155](./eip-1155.md) serve as the objects of the Ethereum computing environment. A growing number of projects are seeking to build interactivity and *"digital phsyics"* into NFTs, especially in the contexts of gaming and decentralized identity. A standard action messaging protocol will allow this physics layer to be developed in the same open, Ethereum-native way as the objects they are built on.
+Tokenized item standards such as [EIP-721](./eip-721.md) and [EIP-1155](./eip-1155.md) serve as the objects of the Ethereum computing environment. A growing number of projects are seeking to build interactivity and *"digital physics"* into NFTs, especially in the contexts of gaming and decentralized identity. A standard action messaging protocol will allow this physics layer to be developed in the same open, Ethereum-native way as the objects they operate on.
 
 The messaging protocol outlined defines how an action is initiated and transmitted between tokens and (optional) shared state environments. It is paired with a common interface for defining functionality that allows off-chain services to aggregate and query supported contracts for functionality and interoperability; creating a discoverable, human-readable network of interactive token contracts. Not only can contracts that implement this standard be automatically discovered by such services, their *policies for interaction* can be as well. This allows clients to easily discover compatible senders and receivers, and allowed actions.
 
@@ -26,17 +26,19 @@ Aggregators can also parse action event logs to derive analytics on new action t
 ### Benefits
 1. Make interactive token contracts **discoverable and usable** by applications
 2. Create a decentralized "digital physics" layer for gaming and other applications
-3. Provide developers with a simple solution with viable validity guarantees to make dynamic NFTs and other tokens 
+3. Provide developers a simple solution with viable validity guarantees to make dynamic NFTs and other tokens 
 4. Allow for generalized action bridges to transmit actions between chains (enabling actions on L1 assets to be saved to L2s, L1 assets to interact with L2 assets, and L2 actions to be "rolled-up"/finalized on L1).
 
 ## Specification
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
 
+Smart contracts implementing this EIP standard MUST implement the EIP-165 supportsInterface function and MUST return the constant value `true` if the `IERC5050Sender` interface ID `0xc8c6c9f3` and/or the `IERC5050Receiver` interface ID `0x1a3f02f4` is passed through the interfaceID argument (depending on which interface(s) the contract implements).
+
 ```solidity
 pragma solidity ^0.8.0;
 
-/// @title ERC-5050 Token Interaction Standard
+/// @title EIP-5050 Interactive NFTs with Modular Environments
 interface IERC5050Sender {
     /// @notice Send an action to the target address
     /// @dev The action's `fromContract` is automatically set to `address(this)`,
@@ -170,7 +172,7 @@ struct Object {
 /// @param user The address of the sender
 /// @param from The initiating object
 /// @param to The receiving object
-/// @param state The state contract
+/// @param state The state controller contract
 /// @param data Additional data with no specified format
 struct Action {
     bytes4 selector;
@@ -203,7 +205,7 @@ The modularity of state contracts allows multiple copies of the same or similar 
 
 #### Example
 
-ERC-5050 State Contract `FightGame` defines a fighting game environment. Token holders call `FightGame.register(contract, tokenId)` to randomly initialize their stats (strength/hp/etc.). An account which holds a registered token A of contract `Fighters`, calls `Fighters.sendAction(AttackAction)`, specifying token A from `Fighters` as the sender, token B from `Pacifists` contract as the receiver, and `FightGame` as the state contract.
+State Contract `FightGame` defines a fighting game environment. Token holders call `FightGame.register(contract, tokenId)` to randomly initialize their stats (strength/hp/etc.). An account which holds a registered token A of contract `Fighters`, calls `Fighters.sendAction(AttackAction)`, specifying token A from `Fighters` as the sender, token B from `Pacifists` contract as the receiver, and `FightGame` as the state contract.
 
 The action is passed to token B, which may handle the action in whatever way it wants before passing the action to the `FightGame` state contract. The state contract can verify the stored action hash with the `Fighters` contract to validate the action is authentic before updating the stats if the tokens, dealing damage to token B.
 
@@ -227,7 +229,7 @@ interface IERC5050Interactive {
 
 Action proxies can be used to support backwards compatibility with non-upgradeable contracts, and potentially for cross-chain action bridging.
 
-They can be implemented using a modified version of [ERC-1820](./eip-1820.md#erc-1820-registry-smart-contract) that allows [ERC-173](./eip-173.md) contract owners to call `setManager()`.
+They can be implemented using a modified version of [EIP-1820](./eip-1820.md#erc-1820-registry-smart-contract) that allows [EIP-173](./eip-173.md) contract owners to call `setManager()`.
 
 #### Controllable
 
@@ -264,7 +266,7 @@ interface IControllable {
 
 #### Metadata Update
 
-Interactive NFTs are likely to update their metadata in response to certain actions and developers MAY want to implement [ERC-4906](./eip-4906.md) event emitters.
+Interactive NFTs are likely to update their metadata in response to certain actions and developers MAY want to implement [EIP-4906](./eip-4906.md) event emitters.
 
 ## Rationale
 
@@ -274,7 +276,7 @@ The critical features of this interactive token standard are that it 1) creates 
 
 Actions are advertised using human-readable strings, and processed using function selectors (`bytes4(keccack256(action_key))`). Human-readable strings allow end-users to easily interpret functionality, while function selectors allow efficient comparison operations on arbitrarily long action keys. This scheme also allows for simple namespacing and sequence specification.
 
-Off-chain services can easily convert the strings to `bytes4` selector encoding when interacting with ERC-5050 contracts or parsing `SendAction` and `ActionReceived` event logs.
+Off-chain services can easily convert the strings to `bytes4` selector encoding when interacting with contracts implementing this EIP or parsing `SendAction` and `ActionReceived` event logs.
 
 ### Validation
 
@@ -307,7 +309,7 @@ Non-upgradeable, already deployed token contracts will not be compatible with th
 
 ## Reference Implementation
 
-A reference implementation is included in `../assets/eip-5050` with a simple stateless example [`Spells.sol`](../assets/eip-5050/Spells.sol)
+A reference implementation is included in `../assets/eip-5050` with a simple stateless example [`ExampleToken2Token.sol`](../assets/eip-5050/ExampleToken2Token.sol), and a stateful example [`ExampleStateContract.sol`](../assets/eip-5050/ExampleStateContract.sol)
 
 ## Security Considerations
 
@@ -317,4 +319,5 @@ As discussed in [Validation](#validation), this is viable because the initiating
 
 ## Copyright
 
-Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
+Copyright and related rights waived via [CC0](../LICENSE.md).
+
