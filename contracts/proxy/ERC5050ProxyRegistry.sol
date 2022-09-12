@@ -1,37 +1,33 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.6;
 
-/**********************************************************\
-* Author: alxi <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Token Interaction Standard: [tbd]
+/******************************************************************************\
+* Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
+* EIP-5050 Token Interaction Standard: https://eips.ethereum.org/EIPS/eip-5050
 *
 * Implementation of an interactive token protocol.
-/**********************************************************/
+/******************************************************************************/
 
 import "./ERC5050Sender.sol";
 import "./ERC5050Receiver.sol";
 
 contract ERC5050TempProxyRegistry {
-    mapping(address => address) _lookup;
-    mapping(address => address) _reverseLookup;
+    mapping(address => mapping(bytes4 =>address)) _lookup;
 
-    function register(address _contract, address _proxy) external {
-        delete _reverseLookup[_proxy];
-        _lookup[_contract] = _proxy;
-        _reverseLookup[_proxy] = _contract;
+    function register(address _contract, bytes4 interfaceId, address _proxy) external {
+        _lookup[_contract][interfaceId] = _proxy;
     }
 
-    function deregister(address _contract) external {
-        address _proxy = _lookup[_contract];
-        delete _reverseLookup[_proxy];
-        delete _lookup[_contract];
+    function deregister(address _contract, bytes4 interfaceId) external {
+        delete _lookup[_contract][interfaceId];
     }
 
-    function proxy(address _contract) external view returns (address) {
-        return _lookup[_contract];
+    function getInterfaceImplementer(address _addr, bytes4 _interfaceId) external view returns (address) {
+        return _lookup[_addr][_interfaceId];
     }
-
-    function reverseProxy(address _proxy) external view returns (address) {
-        return _reverseLookup[_proxy];
+    
+    // Not used or implemented for this example.
+    function getManager(address _contract) external view returns (address) {
+        return _contract;
     }
 }

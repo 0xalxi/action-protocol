@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.6;
 
-/**********************************************************\
-* Author: alxi <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Token Interaction Standard: [tbd]
+/******************************************************************************\
+* Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
+* EIP-5050 Token Interaction Standard: https://eips.ethereum.org/EIPS/eip-5050
 *
 * Implementation of an interactive token protocol.
-/**********************************************************/
+/******************************************************************************/
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
@@ -24,6 +24,9 @@ contract ERC5050Sender is Controllable, IERC5050Sender, ProxyClient, Ownable {
 
     uint256 private _nonce;
     bytes32 private _hash;
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+    bool private reentrancyLock;
 
     mapping(address => mapping(bytes4 => address)) actionApprovals;
     mapping(address => mapping(address => bool)) operatorApprovals;
@@ -58,6 +61,10 @@ contract ERC5050Sender is Controllable, IERC5050Sender, ProxyClient, Ownable {
             return;
         }
         require(
+            reentrancyLock == _NOT_ENTERED,
+            "ERC5050: reentrant call"
+        );
+        require(
             _sendableActions.contains(action.selector),
             "ERC5050: invalid action"
         );
@@ -67,10 +74,12 @@ contract ERC5050Sender is Controllable, IERC5050Sender, ProxyClient, Ownable {
         );
         require(
             action.from._address == address(this) ||
-                getManager(action.from._address) == address(this),
+                getSenderProxy(action.from._address) == address(this),
             "ERC5050: invalid from address"
         );
+        reentrancyLock = _ENTERED;
         _;
+        reentrancyLock = _NOT_ENTERED;
     }
 
     function approveForAction(
@@ -135,8 +144,10 @@ contract ERC5050Sender is Controllable, IERC5050Sender, ProxyClient, Ownable {
                 _validate(action);
                 nonce = _nonce;
             }
+            if(next != address(0)){
+                next = getReceiverProxy(next);
+            }
             if (next.isContract()) {
-                next = getManager(next);
                 try
                     IERC5050Receiver(next).onActionReceived{value: msg.value}(
                         action,

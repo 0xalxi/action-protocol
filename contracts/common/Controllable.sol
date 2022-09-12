@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 /**********************************************************\
 * Author: alxi <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Token Interaction Standard: [tbd]
+* EIP-5050 Token Interaction Standard: https://eips.ethereum.org/EIPS/eip-5050
 *
 * Implementation of an interactive token protocol.
 /**********************************************************/
@@ -14,14 +14,15 @@ contract Controllable is IControllable {
     mapping(address => mapping(bytes4 => bool)) private _actionControllers;
     mapping(address => bool) private _universalControllers;
 
-    function approveController(address _controller, bytes4 _action)
+    function setControllerApproval(address _controller, bytes4 _action, bool _approved)
         external
         virtual
     {
-        _actionControllers[_controller][_action] = true;
+        _actionControllers[_controller][_action] = _approved;
         emit ControllerApproval(
             _controller,
-            _action
+            _action,
+            _approved,
         );
     }
     

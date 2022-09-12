@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.6;
 
-/**********************************************************\
-* Author: alxi <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Token Interaction Standard: [tbd]
+/******************************************************************************\
+* Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
+* EIP-5050 Token Interaction Standard: https://eips.ethereum.org/EIPS/eip-5050
 *
 * Implementation of an interactive token protocol.
-/**********************************************************/
+/******************************************************************************/
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
@@ -24,7 +24,11 @@ contract ERC5050Receiver is
 {
     using Address for address;
     using ActionsSet for ActionsSet.Set;
-
+    
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+    bool private _reentrancyLock;
+    
     ActionsSet.Set private _receivableActions;
 
     function setProxyRegistry(address registry) external virtual onlyOwner {
@@ -35,9 +39,10 @@ contract ERC5050Receiver is
         if (_isApprovedController(msg.sender, action.selector)) {
             return;
         }
+        require(_reentrancyLock == _NOT_ENTERED, "ERC5050: reentrant call");
         require(
             action.to._address == address(this) ||
-                getManager(action.to._address) == address(this),
+                getReceiverProxy(action.to._address) == address(this),
             "ERC5050: invalid receiver"
         );
         require(
@@ -47,7 +52,7 @@ contract ERC5050Receiver is
         require(
             action.from._address == address(0) ||
                 action.from._address == msg.sender ||
-                getManager(action.from._address) == msg.sender,
+                getSenderProxy(action.from._address) == msg.sender,
             "ERC5050: invalid sender"
         );
         require(
@@ -55,7 +60,9 @@ contract ERC5050Receiver is
                 action.user == msg.sender,
             "ERC5050: invalid sender"
         );
+        _reentrancyLock = _ENTERED;
         _;
+        _reentrancyLock = _NOT_ENTERED;
     }
 
     function receivableActions() external view returns (string[] memory) {
@@ -78,9 +85,10 @@ contract ERC5050Receiver is
     {
         if (!_isApprovedController(msg.sender, action.selector)) {
             if (action.state != address(0)) {
-                require(action.state.isContract(), "ERC5050: invalid state");
+                address next = getReceiverProxy(action.state);
+                require(next.isContract(), "ERC5050: invalid state");
                 try
-                    IERC5050Receiver(action.state).onActionReceived{
+                    IERC5050Receiver(next).onActionReceived{
                         value: msg.value
                     }(action, nonce)
                 {} catch (bytes memory reason) {

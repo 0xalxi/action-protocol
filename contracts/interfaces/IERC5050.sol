@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-/**********************************************************\
-* Author: alxi <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Token Interaction Standard: [tbd]
+/******************************************************************************\
+* Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
+* EIP-5050 Token Interaction Standard: https://eips.ethereum.org/EIPS/eip-5050
 *
 * Implementation of an interactive token protocol.
-/**********************************************************/
+/******************************************************************************/
 
 /// @title ERC-5050 Token Interaction Standard
 /// @dev See https://eips.ethereum.org/EIPS/eip-xxx

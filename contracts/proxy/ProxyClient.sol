@@ -1,20 +1,41 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.6;
 
-import {IProxyRegistry} from "./IProxyRegistry.sol";
+import { IERC5050RegistryClient } from "./IERC5050RegistryClient.sol";
+import { IERC5050Receiver, IERC5050Sender } from "../interfaces/IERC5050.sol";
 
 contract ProxyClient {
-    IProxyRegistry proxyRegistry;
+    IERC5050RegistryClient proxyRegistry;
+    address internal selfIsProxyForSender;
+    address internal selfIsProxyForReceiver;
 
     function _setProxyRegistry(address _proxyRegistry) internal {
-        proxyRegistry = IProxyRegistry(_proxyRegistry);
+        proxyRegistry = IERC5050RegistryClient(_proxyRegistry);
     }
 
-    function getManager(address _contract) internal view returns (address) {
-        return proxyRegistry.getManager(_contract);
+    function getSenderProxy(address _addr) internal view returns (address) {
+        if(_addr == address(0)){
+            return _addr;
+        }
+        if(selfIsProxyForSender == _addr) {
+            return address(this);
+        }
+        if(address(proxyRegistry) == address(0)){
+            return _addr;
+        }
+        return proxyRegistry.getInterfaceImplementer(_addr, type(IERC5050Sender).interfaceId);
     }
 
-    function reverseProxy(address _proxy) internal view returns (address) {
-        return proxyRegistry.reverseProxy(_proxy);
+    function getReceiverProxy(address _addr) internal view returns (address) {
+        if(_addr == address(0)){
+            return _addr;
+        }
+        if(selfIsProxyForReceiver == _addr) {
+            return address(this);
+        }
+        if(address(proxyRegistry) == address(0)){
+            return _addr;
+        }
+        return proxyRegistry.getInterfaceImplementer(_addr, type(IERC5050Receiver).interfaceId);
     }
 }
