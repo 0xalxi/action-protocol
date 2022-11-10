@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.6;
 
 /******************************************************************************\
 * Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
@@ -124,7 +124,7 @@ interface IERC5050Receiver {
         bytes4 indexed name,
         address _from,
         address indexed _fromContract,
-        uint256 _tokenId,
+        uint256 _fromTokenId,
         address indexed _to,
         uint256 _toTokenId,
         address _state,

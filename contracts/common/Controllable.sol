@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.6;
 
-/**********************************************************\
-* Author: alxi <chitch@alxi.nl> (https://twitter.com/0xalxi)
+/******************************************************************************\
+* Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
 * EIP-5050 Token Interaction Standard: https://eips.ethereum.org/EIPS/eip-5050
 *
 * Implementation of an interactive token protocol.
-/**********************************************************/
+/******************************************************************************/
 
 import "../interfaces/IControllable.sol";
 
@@ -22,7 +22,7 @@ contract Controllable is IControllable {
         emit ControllerApproval(
             _controller,
             _action,
-            _approved,
+            _approved
         );
     }
     

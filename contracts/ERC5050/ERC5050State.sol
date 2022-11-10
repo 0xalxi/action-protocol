@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.6;
 
 /******************************************************************************\
 * Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
@@ -10,15 +10,21 @@ pragma solidity ^0.8.0;
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC5050Sender, IERC5050Receiver, Action} from "../interfaces/IERC5050.sol";
 import "../common/Controllable.sol";
 import "../common/ActionsSet.sol";
+import {ERC5050ProxyClient} from "./ERC5050ProxyClient.sol";
 
-contract ERC5050State is Controllable, IERC5050Receiver {
+contract ERC5050State is Controllable, IERC5050Receiver, ERC5050ProxyClient, Ownable {
     using Address for address;
     using ActionsSet for ActionsSet.Set;
 
     ActionsSet.Set private _receivableActions;
+
+    function setProxyRegistry(address registry) external virtual onlyOwner {
+        _setProxyRegistry(registry);
+    }
 
     function onActionReceived(Action calldata action, uint256 nonce)
         external
@@ -51,7 +57,7 @@ contract ERC5050State is Controllable, IERC5050Receiver {
         address expectedSender = action.to._address;
         if (expectedSender == address(0)) {
             if (action.from._address != address(0)) {
-                expectedSender = action.from._address;
+                expectedSender = getManager(action.from._address);
             } else {
                 expectedSender = action.user;
             }
@@ -79,6 +85,7 @@ contract ERC5050State is Controllable, IERC5050Receiver {
                     )
                 )
             );
+            address _from = getManager(action.from._address);
             try
                 IERC5050Sender(action.from._address).isValid(actionHash, nonce)
             returns (bool ok) {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Barely modified version of OpenZeppelin Contracts v4.4.1 (utils/structs/EnumerableSet.sol)
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.6;
 
 library ActionsSet {
     struct Set {

@@ -14,12 +14,12 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC5050Sender, IERC5050Receiver, Action} from "../interfaces/IERC5050.sol";
 import "../common/Controllable.sol";
 import "../common/ActionsSet.sol";
-import {ProxyClient} from "./ProxyClient.sol";
+import {ERC5050ProxyClient} from "./ERC5050ProxyClient.sol";
 
 contract ERC5050Receiver is
     Controllable,
     IERC5050Receiver,
-    ProxyClient,
+    ERC5050ProxyClient,
     Ownable
 {
     using Address for address;
