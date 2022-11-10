@@ -109,7 +109,7 @@ interface IERC5050Sender {
         bytes4 indexed name,
         address _from,
         address indexed _fromContract,
-        uint256 _tokenId,
+        uint256 _fromTokenId,
         address indexed _to,
         uint256 _toTokenId,
         address _state,
