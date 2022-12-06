@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.6;
 
-/******************************************************************************\
+/**********************************************************************************************\
 * Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Token Interaction Standard: https://eips.ethereum.org/EIPS/eip-5050
+* EIP-5050 Interactive NFTs with Modular Environments: https://eips.ethereum.org/EIPS/eip-5050
 *
 * Implementation of an interactive token protocol.
-/******************************************************************************/
+/**********************************************************************************************/
 
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {ERC5050Sendable, IERC5050Sender} from "./ERC5050Sender.sol";

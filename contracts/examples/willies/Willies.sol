@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 /*
 * Author: alxi <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Token Interaction Standard: [tbd]
+* EIP-5050 Interactive NFTs with Modular Environments: [tbd]
 *
 * Implementation of an interactive token protocol.
 
@@ -51,7 +51,7 @@ import {ISlapState} from "./SlapState.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {ERC5050, Action, Strings} from "../../proxy/ERC5050.sol";
+import {ERC5050, Action, Strings} from "../../ERC5050/ERC5050.sol";
 
 contract Willies is ERC5050, ERC721 {
     bytes4 constant SLAP_SELECTOR = bytes4(keccak256("slap"));

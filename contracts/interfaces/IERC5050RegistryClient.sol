@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.6;
 
-/******************************************************************************\
+/**********************************************************************************************\
 * Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Token Interaction Standard: https://eips.ethereum.org/EIPS/eip-5050
+* EIP-5050 Interactive NFTs with Modular Environments: https://eips.ethereum.org/EIPS/eip-5050
 *
 * Implementation of an interactive token protocol.
-/******************************************************************************/
+/**********************************************************************************************/
 
 /// @title ERC-5050 Proxy Registry
 ///  Note: the ERC-165 identifier for this interface is 0x01ffc9a7

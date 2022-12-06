@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-/******************************************************************************\
+/**********************************************************************************************\
 * Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Token Interaction Standard: https://eips.ethereum.org/EIPS/eip-5050
+* EIP-5050 Interactive NFTs with Modular Environments: https://eips.ethereum.org/EIPS/eip-5050
 *
 * Implementation of an interactive token protocol.
-/******************************************************************************/
+/**********************************************************************************************/
 
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {ERC5050, Action, Strings} from "../../standard/ERC5050.sol";
+import {ERC5050, Action, Strings} from "../../ERC5050/ERC5050.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Spells is ERC5050, ERC721, Ownable {
