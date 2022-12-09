@@ -11,7 +11,7 @@ pragma solidity ^0.8.6;
 import { IERC5050RegistryClient } from "../interfaces/IERC5050RegistryClient.sol";
 import { IERC5050Receiver, IERC5050Sender } from "../interfaces/IERC5050.sol";
 
-contract ProxyClient {
+contract ERC5050ProxyClient {
     IERC5050RegistryClient proxyRegistry;
     address internal selfIsProxyForSender;
     address internal selfIsProxyForReceiver;
@@ -24,6 +24,9 @@ contract ProxyClient {
         if(_addr == address(0)){
             return _addr;
         }
+        
+        // Proxy contracts should know the address of the contract they are proxying for, and
+        // can skip the read request to the registry.
         if(selfIsProxyForSender == _addr) {
             return address(this);
         }
@@ -37,6 +40,9 @@ contract ProxyClient {
         if(_addr == address(0)){
             return _addr;
         }
+        
+        // Proxy contracts should know the address of the contract they are proxying for, and
+        // can skip the read request to the registry.
         if(selfIsProxyForReceiver == _addr) {
             return address(this);
         }

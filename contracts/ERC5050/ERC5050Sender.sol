@@ -26,7 +26,7 @@ contract ERC5050Sender is Controllable, IERC5050Sender, ERC5050ProxyClient, Owna
     bytes32 private _hash;
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
-    bool private reentrancyLock;
+    uint256 private reentrancyLock;
 
     mapping(address => mapping(bytes4 => address)) actionApprovals;
     mapping(address => mapping(address => bool)) operatorApprovals;

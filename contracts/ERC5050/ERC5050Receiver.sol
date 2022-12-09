@@ -27,7 +27,7 @@ contract ERC5050Receiver is
     
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
-    bool private _reentrancyLock;
+    uint256 private _reentrancyLock;
     
     ActionsSet.Set private _receivableActions;
 

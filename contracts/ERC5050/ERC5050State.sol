@@ -53,14 +53,17 @@ contract ERC5050State is Controllable, IERC5050Receiver, ERC5050ProxyClient, Own
             action.user == address(0) || action.user == tx.origin,
             "ERC5050: invalid user"
         );
-
+        address _proxiedFromAddress;
         address expectedSender = action.to._address;
         if (expectedSender == address(0)) {
             if (action.from._address != address(0)) {
-                expectedSender = getManager(action.from._address);
+                _proxiedFromAddress = getSenderProxy(action.from._address);
+                expectedSender = _proxiedFromAddress;
             } else {
                 expectedSender = action.user;
             }
+        } else {
+            expectedSender = getReceiverProxy(expectedSender);
         }
         require(msg.sender == expectedSender, "ERC5050: invalid sender");
 
@@ -85,9 +88,11 @@ contract ERC5050State is Controllable, IERC5050Receiver, ERC5050ProxyClient, Own
                     )
                 )
             );
-            address _from = getManager(action.from._address);
+            if(_proxiedFromAddress == address(0)) {
+                _proxiedFromAddress = getSenderProxy(action.from._address);
+            }
             try
-                IERC5050Sender(action.from._address).isValid(actionHash, nonce)
+                IERC5050Sender(_proxiedFromAddress).isValid(actionHash, nonce)
             returns (bool ok) {
                 require(ok, "ERC5050: action not validated");
             } catch (bytes memory reason) {
