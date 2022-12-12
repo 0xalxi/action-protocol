@@ -8,7 +8,7 @@ pragma solidity ^0.8.13;
 * Implementation of an interactive token protocol.
 /**********************************************************************************************/
 
-import {ERC5050, Action, Strings} from "./ERC5050/ERC5050.sol";
+import {ERC5050, Action, Strings} from "./ERC5050.sol";
 
 contract Spells is ERC5050 {
     bytes4 constant CAST_SELECTOR = bytes4(keccak256("cast"));

@@ -11,9 +11,9 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {ERC5050Storage} from "./ERC5050Storage.sol";
-import {IERC5050Sender, IERC5050Receiver, Action, Object} from "../../interfaces/IERC5050.sol";
-import {IControllable} from "../../interfaces/IControllable.sol";
-import {ActionsSet} from "../../common/ActionsSet.sol";
+import {IERC5050Sender, IERC5050Receiver, Action, Object} from "../interfaces/IERC5050.sol";
+import {IControllable} from "../interfaces/IControllable.sol";
+import {ActionsSet} from "../common/ActionsSet.sol";
 
 contract ERC5050 is IERC5050Sender, IERC5050Receiver, IControllable {
     using ERC5050Storage for ERC5050Storage.Layout;
