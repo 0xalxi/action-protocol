@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.6;
 
-/**********************************************************************************************\
-* Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
+/*********************************************************************************************\
+* Author: Hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
 * EIP-5050 Interactive NFTs with Modular Environments: https://eips.ethereum.org/EIPS/eip-5050
-*
-* Implementation of an interactive token protocol.
-/**********************************************************************************************/
+/*********************************************************************************************/
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";

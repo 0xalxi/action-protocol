@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.6;
 
-/**********************************************************************************************\
-* Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
+/*********************************************************************************************\
+* Author: Hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
 * EIP-5050 Interactive NFTs with Modular Environments: https://eips.ethereum.org/EIPS/eip-5050
-*
-* Implementation of an interactive token protocol.
-/**********************************************************************************************/
+/*********************************************************************************************/
 
 import { IERC5050RegistryClient } from "../interfaces/IERC5050RegistryClient.sol";
 import { IERC5050Receiver, IERC5050Sender } from "../interfaces/IERC5050.sol";

@@ -1,16 +1,12 @@
 // SPDX-License-Identifier: MIT
+// todo: revert to pragma solidity ^0.8.13;
 pragma solidity ^0.8.13;
 
-/**********************************************************************************************\
-* Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Interactive NFTs with Modular Environments: https://eips.ethereum.org/EIPS/eip-5050
-*
-* Implementation of an interactive token protocol.
-/**********************************************************************************************/
-
+import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import {ERC5050, Action, Strings} from "./ERC5050.sol";
 
-contract Spells is ERC5050 {
+contract Spells is ERC5050, ERC721Upgradeable {
     bytes4 constant CAST_SELECTOR = bytes4(keccak256("cast"));
     bytes4 constant ATTUNE_SELECTOR = bytes4(keccak256("attune"));
 
@@ -139,7 +135,7 @@ contract Spells is ERC5050 {
             } else {
                 i--;
             }
-            rand = rand.div(i + 3);
+            rand = rand / (i + 3);
         }
         uint256 charidx;
         for (i = 0; i < 16; i++) {

@@ -1,21 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-/**********************************************************************************************\
-* Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Interactive NFTs with Modular Environments: https://eips.ethereum.org/EIPS/eip-5050
-*
-* Implementation of an interactive token protocol.
-/**********************************************************************************************/
-
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {ERC5050, Action, Strings} from "../../ERC5050/ERC5050.sol";
+import {ERC5050} from "../../ERC5050/ERC5050.sol";
+import {Action} from "../../interfaces/IERC5050.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Spells is ERC5050, ERC721, Ownable {
+contract Spells is ERC721, ERC5050 {
     using SafeMath for uint256;
 
     bytes4 constant CAST_SELECTOR = bytes4(keccak256("cast"));
@@ -173,5 +168,12 @@ contract Spells is ERC5050, ERC721, Ownable {
 
     function _random(string memory input) internal pure returns (uint256) {
         return uint256(keccak256(abi.encodePacked(input)));
+    }
+    
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC5050, ERC721) returns (bool) {
+        return super.supportsInterface(interfaceId);
     }
 }

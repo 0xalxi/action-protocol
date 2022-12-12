@@ -1,52 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-/*
-* Author: alxi <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Interactive NFTs with Modular Environments: [tbd]
-*
-* Implementation of an interactive token protocol.
-
-                                                                              /&&&%%%&&&&&&&.                           
-                                                                            /%&@&%&ҹ%%%%&&&&&@.                         
-                                                                           /%&&%&%%ҹҹ%ҹ%%&&%&&@                         
-                                                                           ҹ(%%ҹҹҹҹҹҹҹ%ҹҹҹ%&&&&                         
-                                                                           (ҹҹҹ((ҹҹҹ(ҹҹ(ҹ%%%&&%                         
-                                                                           (((ҹ✶((//(((ҹҹҹ%%&&                          
-                                                                           .((((✶///////(((ҹҹ%                          
-                                                                            ҹ((ҹҹ/✶///✶✶//(ҹҹҹ                          
-                                                                            ҹҹҹ((/✶✶/✶✶✶✶// .,.                         
-                                                               ,✶✶✶✶✶/,✶   (@@&ҹ(/✶.         (&                         
-                                                              ✶✶✶✶✶✶✶(,✶,%%&%&         &%%%%&&&&                        
-                                                            ,,✶✶✶,,,✶/,/&%ҹҹ%     ,%%%&&%&&&&&&&&/                      
-                                                             ✶✶✶✶✶✶,✶✶/ҹҹҹ&%, ✶&&&%%%&&&&&&&&&&&&&✶                     
-                                                      ✶(ҹҹ%(%✶,,,,,✶✶/ҹҹҹ%@%%%&&&&&%%%&&&&&&&&&&&&                      
-                                                (ҹҹ%%&%%%%&%%%&&%%&(✶@%/&%&@&%&&&&&&&%%&&&&&&&&&&&                      
-                                           (ҹ%%%%%%%%%&%%%&%%&&%%&&&&@&@@&%%@&&&&&&&&&%&&%%&&&&&&&                      
-                                     .ҹҹ%%%%%%%%%%%%%%%%@&&%%%%%%%&&&@%%&&&@%&&&&&%%%&%%&%%&&@&@@@                      
-                                 %ҹ%%%%%%%%%%%%%&&&&&&&&&&&%%&&&%%%&&&&&&%%&&&&&&%&%%%%&&&&&&&&@&&                      
-                            ✶  %%%%%%%%%%%&&&&&&&&%%,    ✶%%%&&%%&%&&&%%%&&&&&%%%%&%&&&&&&&&&&&@@@                      
-         ✶✶/✶✶✶✶✶✶✶✶✶✶✶✶✶✶/✶/✶, ✶%&&&&&&&&&&/             %&&%%%&&&&%%&&&%%%%%%&%&&&&&&&&&&&&&&@@✶                      
-         ✶✶✶✶,✶✶✶✶✶✶✶,✶✶✶✶//(((,✶&&&&&                    &&%%%%%ҹ%%&&&&%%&%%%%%&&&&&&&&&&&&@@@@&                       
-           ..       ✶✶/✶✶✶/((    &&                       %&&%&%&%%%%%%%%%%%&&&&&&&&&&&&&@@&@@@@ҹ,                      
-                      .                                   (&&&%%%%%%%%%%&&&&&&&&&&&&&&@&&&&&@@@&&%%%%%%/                
-                                                           &&&%%&&&%&%&&&&&&&&&&@@&&&&&@&&&&&&&&%%%%ҹҹ%ҹҹ%ҹҹҹҹ          
-                                                          %&&&&&&&&&&&&&&&@@@&&&&&&&&&&&&&&&&&&&&&&%%%%%%%%%%%%%ҹ       
-                                                          %@@@&&@&@&@@@@&&&&&&&&&&&&&&&&&&&&&&&&&&&%%%&%%%%&&&&&&&%     
-                                                         &&%&@@@&&&&@&%&&&&&&&&%&&&&&&&&&&%&&&&&&&&%%ҹҹ%&&&&&&&&&&&%    
-                                                        %&&&&%&&&&&&&&&&&&%%%&%&%&%&&&&&&&&&&@&&&@&%ҹ%&&&&&&&&&&&&&&    
-                                                       ✶%%&&&&&&&&&@@&&&&&&%&&&&&&&&%&%&&&&&&&&&&ҹ%&&&&&&&&&&&&&&&&&&   
-                                                       &%%&&%&&%%&%%%&%%&%%&&&&&&&&&%%&%&&@&&&&&&&&&&%%&&&&%%&&&&&&&&   
-                                                      /&&&&%%%%%%%%%%%%&&%%%%%%%&&&%&&&&&&&&&&&&&&@&&&&%%&&&&ҹ,.        
-                                                      &&&&&%%%%%%%%&&&%%%%%&%%%%&&&&&&&%&&&&&&&&&&&&&@&%                
-                                                      &%%%%%%%%%%%%%%&&&&&&&&&&&&&&&&&&&&&&&&&@@@@@&&@@&&               
-                                                      %%%%%%%%%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&@&@@&&&&@&&%             
-                                                      ҹ%%%%%%&&&&&&&&&&&&&&&&&&@@&&&&&&&&&&&&&@@@&&&&&@&&&&&            
-                                                       %%%&%&&&&&&&&@&@@@&@@@&@@&&&&&&&&&&&&&@&&&&&&&@&&&&&,            
-                                                       &%&&&&&&&&&&&@@&@@&&@&@@&&&&&&&&&&&&&&&@&&&&&&&&&                
-
-*/
-
 import {ISlapState} from "./SlapState.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -79,7 +33,7 @@ contract ApesProxy is ERC5050 {
     );
 
     constructor(address _bayc) {
-        _registerAction(SLAP_SELECTOR);
+        _registerAction("slap");
         bayc = IERC721(_bayc);
     }
 
@@ -89,9 +43,8 @@ contract ApesProxy is ERC5050 {
         override
         onlySendableAction(action)
     {
-        if (action.selector == SLAP_SELECTOR) {
-            _sendSlap(action);
-        }
+        require(bayc.ownerOf(action.from._tokenId) == msg.sender, "not owner");
+        _sendAction(action);
     }
 
     function onActionReceived(Action calldata action, uint256 _nonce)
@@ -100,9 +53,7 @@ contract ApesProxy is ERC5050 {
         override
         onlyReceivableAction(action, _nonce)
     {
-        if (action.selector == SLAP_SELECTOR) {
-            _onSlapReceived(action, _nonce);
-        }
+       _onActionReceived(action, _nonce);
     }
 
     /// Off-chain BAYC service listens for `ActionReceived` events and updates
@@ -135,9 +86,5 @@ contract ApesProxy is ERC5050 {
         require(strengthStart > 0, "dead ape");
 
         _sendAction(action);
-    }
-
-    function _onSlapReceived(Action calldata action, uint256 _nonce) private {
-        _onActionReceived(action, _nonce);
     }
 }

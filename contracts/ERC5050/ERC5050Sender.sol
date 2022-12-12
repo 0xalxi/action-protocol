@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.6;
 
-/**********************************************************************************************\
-* Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
+/*********************************************************************************************\
+* Author: Hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
 * EIP-5050 Interactive NFTs with Modular Environments: https://eips.ethereum.org/EIPS/eip-5050
-*
-* Implementation of an interactive token protocol.
-/**********************************************************************************************/
+/*********************************************************************************************/
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC5050Sender, IERC5050Receiver, Action} from "../interfaces/IERC5050.sol";
 import "../common/Controllable.sol";
 import "../common/ActionsSet.sol";
@@ -205,5 +205,15 @@ contract ERC5050Sender is Controllable, IERC5050Sender, ERC5050ProxyClient, Owna
 
     function _registerSendable(string memory action) internal {
         _sendableActions.add(action);
+    }
+    
+    
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
+        return
+            interfaceId == type(IERC5050Sender).interfaceId ||
+            interfaceId == type(IERC165).interfaceId;
     }
 }

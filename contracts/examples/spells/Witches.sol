@@ -1,20 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-/**********************************************************************************************\
-* Author: hypervisor <chitch@alxi.nl> (https://twitter.com/0xalxi)
-* EIP-5050 Interactive NFTs with Modular Environments: https://eips.ethereum.org/EIPS/eip-5050
-*
-* Implementation of an interactive token protocol.
-/**********************************************************************************************/
-
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../../ERC5050/ERC5050.sol";
 
-contract Witches is ERC5050, ERC721, Ownable {
+contract Witches is ERC5050, ERC721 {
     bytes4 constant CAST_SELECTOR = bytes4(keccak256("cast"));
     bytes4 constant ATTUNE_SELECTOR = bytes4(keccak256("attune"));
 
@@ -35,8 +28,15 @@ contract Witches is ERC5050, ERC721, Ownable {
 
     constructor(address _spells) ERC721("Witches", unicode"⏾") {
         spells = _spells;
-        _registerReceivable(CAST_SELECTOR);
-        _registerSendable(ATTUNE_SELECTOR);
+        _registerReceivable("cast");
+        _registerSendable("attune");
+    }
+    
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC5050, ERC721) returns (bool) {
+        return super.supportsInterface(interfaceId);
     }
 
     function sendAction(Action memory action)
