@@ -8,8 +8,6 @@ pragma solidity ^0.8.6;
 * Implementation of an interactive token protocol.
 /**********************************************************************************************/
 
-pragma solidity ^0.8.0;
-
 /// @title EIP-5050 Action Controller
 interface IControllable {
     

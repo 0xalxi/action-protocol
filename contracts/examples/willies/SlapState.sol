@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
+pragma solidity ^0.8.6
 /*
 * Author: alxi <chitch@alxi.nl> (https://twitter.com/0xalxi)
 * EIP-5050 Interactive NFTs with Modular Environments: [tbd]
