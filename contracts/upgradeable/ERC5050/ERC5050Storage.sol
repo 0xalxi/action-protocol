@@ -7,8 +7,8 @@ pragma solidity ^0.8.6;
 * EIP-5050 Interactive NFTs with Modular Environments: https://eips.ethereum.org/EIPS/eip-5050
 /*********************************************************************************************/
 
-import {Action, IERC5050Receiver, IERC5050Sender} from "../interfaces/IERC5050.sol";
-import {ActionsSet} from "../common/ActionsSet.sol";
+import {Action, IERC5050Receiver, IERC5050Sender} from "../../interfaces/IERC5050.sol";
+import {ActionsSet} from "../../common/ActionsSet.sol";
 
 /// @title ERC-5050 Proxy Registry
 ///  Note: the ERC-165 identifier for this interface is 0x01ffc9a7

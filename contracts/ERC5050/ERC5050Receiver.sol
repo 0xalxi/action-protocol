@@ -49,17 +49,15 @@ contract ERC5050Receiver is
             _receivableActions.contains(action.selector),
             "ERC5050: invalid action"
         );
-        require(
-            action.from._address == address(0) ||
+        if (action.from._address != address(0)) {
+            require(
                 action.from._address == msg.sender ||
-                getSenderProxy(action.from._address) == msg.sender,
-            "ERC5050: invalid sender"
-        );
-        require(
-            (action.from._address != address(0) && action.user == tx.origin) ||
-                action.user == msg.sender,
-            "ERC5050: invalid sender"
-        );
+                    getSenderProxy(action.from._address) == msg.sender,
+                "ERC5050: invalid sender"
+            );
+        } else {
+            require(action.user == msg.sender, "ERC5050: invalid sender");
+        }
         _reentrancyLock = _ENTERED;
         _;
         _reentrancyLock = _NOT_ENTERED;

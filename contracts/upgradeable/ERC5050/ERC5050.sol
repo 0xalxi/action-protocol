@@ -11,9 +11,9 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {ERC5050Storage} from "./ERC5050Storage.sol";
-import {IERC5050Sender, IERC5050Receiver, Action, Object} from "../interfaces/IERC5050.sol";
-import {IControllable} from "../interfaces/IControllable.sol";
-import {ActionsSet} from "../common/ActionsSet.sol";
+import {IERC5050Sender, IERC5050Receiver, Action, Object} from "../../interfaces/IERC5050.sol";
+import {IControllable} from "../../interfaces/IControllable.sol";
+import {ActionsSet} from "../../common/ActionsSet.sol";
 
 contract ERC5050 is IERC5050Sender, IERC5050Receiver, IControllable {
     using ERC5050Storage for ERC5050Storage.Layout;
@@ -140,19 +140,16 @@ contract ERC5050 is IERC5050Sender, IERC5050Receiver, IControllable {
             store._receivableActions.contains(action.selector),
             "ERC5050: invalid action"
         );
-        
-        if (action.from._address != address(0)) {
-            require(
-                action.from._address == msg.sender ||
-                    ERC5050Storage.getSenderProxy(action.from._address) == msg.sender,
-                "ERC5050: invalid sender"
-            );
-        } else {
-            require(
+        require(
+            action.from._address == address(0) ||
+                action.from._address == msg.sender,
+            "ERC5050: invalid sender"
+        );
+        require(
+            action.from._address != address(0) ||
                 action.user == msg.sender,
-                "ERC5050: invalid sender"
-            );
-        }
+            "ERC5050: invalid sender"
+        );
         store.receiverLock = _ENTERED;
         _;
         store.receiverLock = _NOT_ENTERED;

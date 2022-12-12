@@ -49,10 +49,6 @@ contract ERC5050State is Controllable, IERC5050Receiver, ERC5050ProxyClient, Own
             "ERC5050: invalid action"
         );
         require(action.state == address(this), "ERC5050: invalid state");
-        require(
-            action.user == address(0) || action.user == tx.origin,
-            "ERC5050: invalid user"
-        );
         address _proxiedFromAddress;
         address expectedSender = action.to._address;
         if (expectedSender == address(0)) {

@@ -7,8 +7,8 @@ pragma solidity ^0.8.6;
 * EIP-5050 Interactive NFTs with Modular Environments: https://eips.ethereum.org/EIPS/eip-5050
 /*********************************************************************************************/
 
-import {Action, IERC5050Receiver, IERC5050Sender} from "../interfaces/IERC5050.sol";
-import {ActionsSet} from "../common/ActionsSet.sol";
+import {Action, IERC5050Receiver, IERC5050Sender} from "../../interfaces/IERC5050.sol";
+import {ActionsSet} from "../../common/ActionsSet.sol";
 
 /// @title ERC-5050 Proxy Registry
 ///  Note: the ERC-165 identifier for this interface is 0x01ffc9a7
@@ -31,23 +31,17 @@ interface IERC5050RegistryClient {
     function getManager(address _addr) external view returns(address);
 }
 
-library ERC5050Storage {
+library ERC5050StateStorage {
     using ActionsSet for ActionsSet.Set;
 
     bytes32 constant ERC_5050_STORAGE_POSITION =
         keccak256("erc5050.storage.location");
 
     struct Layout {
-        uint256 nonce;
-        bytes32 _hash;
         IERC5050RegistryClient proxy;
-        ActionsSet.Set _sendableActions;
         ActionsSet.Set _receivableActions;
-        mapping(address => mapping(bytes4 => address)) actionApprovals;
-        mapping(address => mapping(address => bool)) operatorApprovals;
         mapping(address => mapping(bytes4 => bool)) _actionControllers;
         mapping(address => bool) _universalControllers;
-        uint256 senderLock;
         uint256 receiverLock;
     }
 
@@ -74,34 +68,5 @@ library ERC5050Storage {
     
     function setProxyRegistry(address _addr) internal {
         layout().proxy = IERC5050RegistryClient(_addr);
-    }
-
-    function _validate(Layout storage l, Action memory action)
-        internal
-    {
-        ++l.nonce;
-        l._hash = bytes32(
-            keccak256(
-                abi.encodePacked(
-                    action.selector,
-                    action.user,
-                    action.from._address,
-                    action.from._tokenId,
-                    action.to._address,
-                    action.to._tokenId,
-                    action.state,
-                    action.data,
-                    l.nonce
-                )
-            )
-        );
-    }
-    
-    function isValid(Layout storage l, bytes32 actionHash, uint256 nonce)
-        internal
-        view
-        returns (bool)
-    {
-        return actionHash == l._hash && nonce == l.nonce;
     }
 }
