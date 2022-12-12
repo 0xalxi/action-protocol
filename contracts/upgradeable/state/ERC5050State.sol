@@ -96,30 +96,13 @@ contract ERC5050State is IERC5050Receiver, IControllable {
         override(IERC5050Receiver)
         onlyReceivableAction(action, nonce)
     {
-        _onActionReceived(action, nonce);
+        _onActionReceived(action);
     }
 
-    function _onActionReceived(Action calldata action, uint256 nonce)
+    function _onActionReceived(Action calldata action)
         internal
         virtual
     {
-        if (action.state != address(0) && action.state != address(this) 
-            && !_isApprovedController(msg.sender, action.selector)) {
-            require(action.state.isContract(), "ERC5050: invalid state");
-            try
-                IERC5050Receiver(action.state).onActionReceived{
-                    value: msg.value
-                }(action, nonce)
-            {} catch (bytes memory reason) {
-                if (reason.length == 0) {
-                    revert("ERC5050: call to non ERC5050Receiver");
-                } else {
-                    assembly {
-                        revert(add(32, reason), mload(reason))
-                    }
-                }
-            }
-        }
         emit ActionReceived(
             action.selector,
             action.user,
