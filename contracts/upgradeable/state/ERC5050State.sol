@@ -114,6 +114,70 @@ contract ERC5050State is IERC5050Receiver, IControllable {
             action.data
         );
     }
+    
+    modifier onlyCommittableAction(Action calldata action) {
+        require(msg.sender == action.user, "invalid sender");
+        require(address(this) == action.state, "invalid state");
+        require(
+            ERC5050StateStorage.layout()._receivableActions.contains(action.selector),
+            "ERC5050: invalid action"
+        );
+        _;
+        emit ActionReceived(
+            action.selector,
+            action.user,
+            action.from._address,
+            action.from._tokenId,
+            action.to._address,
+            action.to._tokenId,
+            action.state,
+            action.data
+        );
+    } 
+    
+    function _beforeCommitAction(Action calldata action, uint256 nonce)
+        internal
+        virtual
+    {
+        // Commit action as controller on sender
+        try
+            IERC5050Sender(action.from._address).sendAction{
+                value: msg.value
+            }(action)
+        {} catch (bytes memory reason) {
+            if (reason.length == 0) {
+                revert("call to non ERC5050Sender");
+            } else {
+                assembly {
+                    revert(add(32, reason), mload(reason))
+                }
+            }
+        }
+        
+        // Commit action as controller on receiver
+        try
+            IERC5050Receiver(action.from._address).onActionReceived{
+                value: msg.value
+            }(action, nonce)
+        {} catch (bytes memory reason) {
+            if (reason.length == 0) {
+                revert("call to non ERC5050Receiver");
+            } else {
+                assembly {
+                    revert(add(32, reason), mload(reason))
+                }
+            }
+        }
+    }
+    
+    function commitAction(Action calldata action, uint256 nonce)
+        external
+        payable
+        virtual
+        onlyCommittableAction(action)
+    {
+        _beforeCommitAction(action, nonce);
+    }
 
     function setControllerApproval(address _controller, bytes4 _action, bool _approved)
         external
