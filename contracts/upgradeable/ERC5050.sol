@@ -13,6 +13,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ERC5050Storage} from "./ERC5050Storage.sol";
 import {IERC5050Sender, IERC5050Receiver, Action, Object} from "../interfaces/IERC5050.sol";
 import {IControllable} from "../interfaces/IControllable.sol";
+import {IERC5050RegistryClient} from "../interfaces/IERC5050RegistryClient.sol";
 import {ActionsSet} from "../common/ActionsSet.sol";
 
 contract ERC5050 is IERC5050Sender, IERC5050Receiver, IControllable {
@@ -302,6 +303,10 @@ contract ERC5050 is IERC5050Sender, IERC5050Receiver, IControllable {
     
     function sendableActions() external view override(IERC5050Sender) returns (string[] memory) {
         return ERC5050Storage.layout()._receivableActions.names();
+    }
+    
+    function _setProxyRegistry(address registry) internal {
+        ERC5050Storage.layout().proxyRegistry = IERC5050RegistryClient(registry);
     }
     
     function _registerAction(string memory action) internal {

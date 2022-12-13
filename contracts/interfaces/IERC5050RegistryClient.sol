@@ -22,9 +22,4 @@ interface IERC5050RegistryClient {
     /// @return The address of the contract which implements the interface '_interfaceHash' for '_addr'
     /// or '0' if '_addr' did not register an implementer for this interface.
     function getInterfaceImplementer(address _addr, bytes4 _interfaceHash) external view returns (address);
-
-    /// @notice Get the manager of an address.
-    /// @param _addr Address for which to return the manager.
-    /// @return Address of the manager for a given address.
-    function getManager(address _addr) external view returns(address);
 }
