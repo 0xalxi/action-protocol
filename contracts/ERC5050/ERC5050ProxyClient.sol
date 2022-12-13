@@ -12,8 +12,8 @@ import { IERC5050Receiver, IERC5050Sender } from "../interfaces/IERC5050.sol";
 
 contract ERC5050ProxyClient {
     IERC5050RegistryClient proxyRegistry;
-    address internal selfIsProxyForSender;
-    address internal selfIsProxyForReceiver;
+    address internal _proxiedSender;
+    address internal _proxiedReceiver;
 
     function _setProxyRegistry(address _proxyRegistry) internal {
         proxyRegistry = IERC5050RegistryClient(_proxyRegistry);
@@ -26,7 +26,7 @@ contract ERC5050ProxyClient {
         
         // Proxy contracts should know the address of the contract they are proxying for, and
         // can skip the read request to the registry.
-        if(selfIsProxyForSender == _addr) {
+        if(_proxiedSender == _addr) {
             return address(this);
         }
         if(address(proxyRegistry) == address(0)){
@@ -42,7 +42,7 @@ contract ERC5050ProxyClient {
         
         // Proxy contracts should know the address of the contract they are proxying for, and
         // can skip the read request to the registry.
-        if(selfIsProxyForReceiver == _addr) {
+        if(_proxiedReceiver == _addr) {
             return address(this);
         }
         if(address(proxyRegistry) == address(0)){

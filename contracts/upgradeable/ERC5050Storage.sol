@@ -47,6 +47,8 @@ library ERC5050Storage {
         mapping(address => mapping(address => bool)) operatorApprovals;
         mapping(address => mapping(bytes4 => bool)) _actionControllers;
         mapping(address => bool) _universalControllers;
+        address proxiedSender;
+        address proxiedReceiver;
         uint256 senderLock;
         uint256 receiverLock;
     }
@@ -62,12 +64,24 @@ library ERC5050Storage {
         if(address(layout().proxy) == address(0)){
             return _addr;
         }
+        if(_addr == address(0)) {
+            return _addr;
+        }
+        if(layout().proxiedReceiver == address(this)) {
+            return address(this);
+        }
         return layout().proxy.getInterfaceImplementer(_addr, type(IERC5050Receiver).interfaceId);
     }
     
     function getSenderProxy(address _addr) internal view returns (address) {
         if(address(layout().proxy) == address(0)){
             return _addr;
+        }
+        if(_addr == address(0)) {
+            return _addr;
+        }
+        if(layout().proxiedSender == address(this)) {
+            return address(this);
         }
         return layout().proxy.getInterfaceImplementer(_addr, type(IERC5050Sender).interfaceId);
     }

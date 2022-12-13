@@ -316,4 +316,12 @@ contract ERC5050 is IERC5050Sender, IERC5050Receiver, IControllable {
     function _registerSendable(string memory action) internal {
         ERC5050Storage.layout()._sendableActions.add(action);
     }
+    
+    function _registerAsSenderProxy(address _sender) internal {
+        ERC5050Storage.layout().proxiedSender = _sender;
+    }
+    
+    function _registerAsReceiverProxy(address _receiver) internal {
+        ERC5050Storage.layout().proxiedReceiver = _receiver;
+    }
 }
