@@ -11,7 +11,7 @@ import { IERC5050RegistryClient } from "../interfaces/IERC5050RegistryClient.sol
 import { IERC5050Receiver, IERC5050Sender } from "../interfaces/IERC5050.sol";
 
 contract ERC5050ProxyClient {
-    IERC5050RegistryClient proxyRegistry;
+    IERC5050RegistryClient proxyRegistry = IERC5050RegistryClient(0x5050f71E270671315B460F5C4C37A82deAE6F77D);
     address internal _proxiedSender;
     address internal _proxiedReceiver;
 

@@ -139,6 +139,7 @@ contract ERC5050State is IERC5050Receiver, IControllable {
         internal
         virtual
     {
+        // TODO: add proxy step
         // Commit action as controller on sender
         try
             IERC5050Sender(action.from._address).sendAction{

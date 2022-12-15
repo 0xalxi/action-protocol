@@ -21,7 +21,7 @@ interface ERC5050ProxyImplementerInterface {
 /// @title ERC5050 Proxy Registry Contract (owner-manageable ERC5050Proxy Contract)
 /// @notice This contract is the official implementation of the ERC5050 Proxy Registry.
 /// @notice For more details, see https://eips.ethereum.org/EIPS/eip-5050
-contract ERC5050Registry {
+contract ERC5050ProxyRegistry {
     /// @notice Magic value which is returned if a contract implements an interface on behalf of some other address.
     bytes32 constant internal ERC5050_ACCEPT_MAGIC = keccak256(abi.encodePacked("ERC5050_ACCEPT_MAGIC"));
 
@@ -29,8 +29,8 @@ contract ERC5050Registry {
     mapping(address => mapping(bytes4 => address)) internal interfaces;
     /// @notice mapping from addresses to their manager.
     mapping(address => address) internal managers;
-    /// @notice mapping from addresses to boolean flag indicating whether owners are disallowed manager priveleges.
-    mapping(address => bool) internal disallowedOwners;
+    /// @notice mapping from contract addresses to boolean flag indicating `owner()` is disallowed manager priveleges.
+    mapping(address => bool) internal disallowedOwnerManagers;
 
     /// @notice Indicates a contract is the 'implementer' of 'interfaceHash' for 'addr'.
     event InterfaceImplementerSet(address indexed addr, bytes32 indexed interfaceHash, address indexed implementer);
@@ -102,7 +102,7 @@ contract ERC5050Registry {
     /// @param _addr Address for which to return the owner.
     /// @return Address of the owner for a given address.
     function getOwner(address _addr) internal view returns (address) {
-        if(disallowedOwners[_addr]) {
+        if(disallowedOwnerManagers[_addr]) {
             return _addr;
         }
         (bool success, bytes memory returnData) = _addr.staticcall(
@@ -114,8 +114,10 @@ contract ERC5050Registry {
         return _addr;
     }
     
-    /// @notice Disallow owner of `msg.sender` from setting manager.
+    /// @notice Disallow owner of `msg.sender` from setting manager. Intended to be called
+    /// by a contract that implements `owner()` and does not want to allow the owner to set
+    /// the manager.
     function disallowOwner() external {
-        disallowedOwners[msg.sender] = true;
+        disallowedOwnerManagers[msg.sender] = true;
     }
 }
