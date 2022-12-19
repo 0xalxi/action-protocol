@@ -132,7 +132,8 @@ contract ERC5050 is IERC5050Sender, IERC5050Receiver, IControllable {
             return;
         }
         require(
-            action.to._address == address(this),
+            action.to._address == address(this) ||
+                ERC5050Storage.getReceiverProxy(action.to._address) == address(this),
             "ERC5050: invalid receiver"
         );
         ERC5050Storage.Layout storage store = ERC5050Storage.layout();

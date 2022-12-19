@@ -4,7 +4,7 @@ pragma solidity ^0.8.6;
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
-import {ERC5050StateStorage} from "./ERC5050StateStorage.sol";
+import {ERC5050StateStorage, IERC5050RegistryClient} from "./ERC5050StateStorage.sol";
 import {IERC5050Sender, IERC5050Receiver, Action, Object} from "../../interfaces/IERC5050.sol";
 import {IControllable} from "../../interfaces/IControllable.sol";
 import {ActionsSet} from "../../common/ActionsSet.sol";
@@ -244,5 +244,9 @@ contract ERC5050State is IERC5050Receiver, IControllable {
     
     function _registerReceivable(string memory action) internal {
         ERC5050StateStorage.layout()._receivableActions.add(action);
+    }
+    
+    function _setProxyRegistry(address registry) internal {
+        ERC5050StateStorage.layout().proxyRegistry = IERC5050RegistryClient(registry);
     }
 }
