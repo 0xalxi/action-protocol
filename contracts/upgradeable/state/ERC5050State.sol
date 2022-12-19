@@ -139,33 +139,45 @@ contract ERC5050State is IERC5050Receiver, IControllable {
         internal
         virtual
     {
-        // TODO: add proxy step
+        
         // Commit action as controller on sender
-        try
-            IERC5050Sender(action.from._address).sendAction{
-                value: msg.value
-            }(action)
-        {} catch (bytes memory reason) {
-            if (reason.length == 0) {
-                revert("call to non ERC5050Sender");
-            } else {
-                assembly {
-                    revert(add(32, reason), mload(reason))
+        address _from = action.from._address;
+        if (action.from._address != address(0)) {
+            _from = ERC5050StateStorage.getSenderProxy(action.from._address);
+        }
+        if(_from.isContract()){
+            try
+                IERC5050Sender(action.from._address).sendAction{
+                    value: msg.value
+                }(action)
+            {} catch (bytes memory reason) {
+                if (reason.length == 0) {
+                    revert("call to non ERC5050Sender");
+                } else {
+                    assembly {
+                        revert(add(32, reason), mload(reason))
+                    }
                 }
             }
         }
         
         // Commit action as controller on receiver
-        try
-            IERC5050Receiver(action.from._address).onActionReceived{
-                value: msg.value
-            }(action, nonce)
-        {} catch (bytes memory reason) {
-            if (reason.length == 0) {
-                revert("call to non ERC5050Receiver");
-            } else {
-                assembly {
-                    revert(add(32, reason), mload(reason))
+        address _to = action.to._address;
+        if (action.to._address != address(0)) {
+            _to = ERC5050StateStorage.getReceiverProxy(action.to._address);
+        }
+        if(_to.isContract()){
+            try
+                IERC5050Receiver(action.from._address).onActionReceived{
+                    value: msg.value
+                }(action, nonce)
+            {} catch (bytes memory reason) {
+                if (reason.length == 0) {
+                    revert("call to non ERC5050Receiver");
+                } else {
+                    assembly {
+                        revert(add(32, reason), mload(reason))
+                    }
                 }
             }
         }

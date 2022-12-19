@@ -135,17 +135,15 @@ contract ERC5050Sender is Controllable, IERC5050Sender, ERC5050ProxyClient, Owna
             bool stateIsContract = action.state.isContract();
             address next;
             if (toIsContract) {
-                next = action.to._address;
+                next = getReceiverProxy(action.to._address);
             } else if (stateIsContract) {
+                // state contracts should not need a proxy
                 next = action.state;
             }
             uint256 nonce;
             if (toIsContract && stateIsContract) {
                 _validate(action);
                 nonce = _nonce;
-            }
-            if(next != address(0)){
-                next = getReceiverProxy(next);
             }
             if (next.isContract()) {
                 try
