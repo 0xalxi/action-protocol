@@ -147,7 +147,7 @@ contract ERC5050State is IERC5050Receiver, IControllable {
         }
         if(_from.isContract()){
             try
-                IERC5050Sender(action.from._address).sendAction{
+                IERC5050Sender(_from).sendAction{
                     value: msg.value
                 }(action)
             {} catch (bytes memory reason) {
@@ -168,7 +168,7 @@ contract ERC5050State is IERC5050Receiver, IControllable {
         }
         if(_to.isContract()){
             try
-                IERC5050Receiver(action.from._address).onActionReceived{
+                IERC5050Receiver(_to).onActionReceived{
                     value: msg.value
                 }(action, nonce)
             {} catch (bytes memory reason) {
