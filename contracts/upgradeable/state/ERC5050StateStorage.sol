@@ -23,7 +23,7 @@ interface IERC5050RegistryClient {
     /// E.g., 'web3.utils.keccak256("ERC777TokensRecipient")' for the 'ERC777TokensRecipient' interface.
     /// @return The address of the contract which implements the interface '_interfaceHash' for '_addr'
     /// or '0' if '_addr' did not register an implementer for this interface.
-    function getInterfaceImplementer(address _addr, bytes32 _interfaceHash) external view returns (address);
+    function getInterfaceImplementer(address _addr, bytes4 _interfaceHash) external view returns (address);
 }
 
 library ERC5050StateStorage {
