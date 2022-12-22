@@ -31,7 +31,7 @@ contract ERC5050 is IERC5050Sender, IERC5050Receiver, IControllable {
         external
         payable
         virtual
-        override(IERC5050Sender)
+        override(IERC5050Sender) onlySendableAction(action)
     {
         _sendAction(action);
     }
