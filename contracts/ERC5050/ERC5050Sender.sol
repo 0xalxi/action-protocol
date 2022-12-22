@@ -58,6 +58,7 @@ contract ERC5050Sender is Controllable, IERC5050Sender, ERC5050ProxyClient, Owna
 
     modifier onlySendableAction(Action memory action) {
         if (_isApprovedController(msg.sender, action.selector)) {
+            _;
             return;
         }
         require(

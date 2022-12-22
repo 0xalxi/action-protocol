@@ -41,6 +41,7 @@ contract ERC5050State is Controllable, IERC5050Receiver, ERC5050ProxyClient, Own
 
     modifier onlyReceivableAction(Action calldata action, uint256 nonce) {
         if (_isApprovedController(msg.sender, action.selector)) {
+            _;
             return;
         }
         require(

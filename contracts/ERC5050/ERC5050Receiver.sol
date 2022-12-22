@@ -37,6 +37,7 @@ contract ERC5050Receiver is
 
     modifier onlyReceivableAction(Action calldata action, uint256 nonce) {
         if (_isApprovedController(msg.sender, action.selector)) {
+            _;
             return;
         }
         require(_reentrancyLock == _NOT_ENTERED, "ERC5050: reentrant call");

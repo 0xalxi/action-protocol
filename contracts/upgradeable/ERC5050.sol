@@ -95,6 +95,7 @@ contract ERC5050 is IERC5050Sender, IERC5050Receiver, IControllable {
     
     modifier onlySendableAction(Action memory action) {
         if (_isApprovedController(msg.sender, action.selector)) {
+            _;
             return;
         }
         ERC5050Storage.Layout storage store = ERC5050Storage.layout();
@@ -129,6 +130,7 @@ contract ERC5050 is IERC5050Sender, IERC5050Receiver, IControllable {
 
     modifier onlyReceivableAction(Action calldata action, uint256 nonce) {
         if (_isApprovedController(msg.sender, action.selector)) {
+            _;
             return;
         }
         require(

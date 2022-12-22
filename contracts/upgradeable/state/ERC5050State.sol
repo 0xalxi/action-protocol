@@ -22,6 +22,7 @@ contract ERC5050State is IERC5050Receiver, IControllable {
 
     modifier onlyReceivableAction(Action calldata action, uint256 nonce) {
         if (_isApprovedController(msg.sender, action.selector)) {
+            _;
             return;
         }
         require(
