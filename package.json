@@ -1,6 +1,6 @@
 {
   "name": "@sharedstate/verbs",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "A standard action messaging protol for interactions on and between NFTs",
   "main": "index.js",
   "repository": "git@github.com:alexi/eip-5050.git",

@@ -38,7 +38,6 @@ contract ERC5050 is IERC5050Sender, IERC5050Receiver, IControllable {
 
     function _sendAction(Action memory action) internal {
         if (!_isApprovedController(msg.sender, action.selector)) {
-            action.from._address = address(this);
             bool toIsContract = action.to._address.isContract();
             bool stateIsContract = action.state.isContract();
             address next;
